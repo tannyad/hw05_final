@@ -89,6 +89,7 @@ def post_edit(request, post_id):
     }
     return render(request, 'posts/create_post.html', context)
 
+
 @login_required
 def add_comment(request, post_id):
     post = get_object_or_404(Post, id=post_id)
@@ -105,11 +106,13 @@ def add_comment(request, post_id):
 def follow_index(request):
     # информация о текущем пользователе доступна в переменной request.user
     subs = request.user.follower.values('author')
-    posts = Post.objects.filter(author__in=subs).select_related('author', 'group')
+    posts = Post.objects.filter(
+        author__in=subs).select_related('author', 'group')
     context = {
         'page_obj': pagin(request, posts, POSTS_AMOUNT),
     }
     return render(request, 'posts/follow.html', context)
+
 
 @login_required
 def profile_follow(request, username):
@@ -119,6 +122,7 @@ def profile_follow(request, username):
     if request.user != author and not follower.exists():
         Follow.objects.create(user=request.user, author=author)
     return redirect("posts:follow_index")
+
 
 @login_required
 def profile_unfollow(request, username):

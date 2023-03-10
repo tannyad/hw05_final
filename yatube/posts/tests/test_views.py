@@ -166,6 +166,7 @@ class StaticViewsTests(TestCase):
                 response = self.post_auth.get(value)
                 form_field = response.context["page_obj"]
                 self.assertIn(expected, form_field)
+
     def test_img_response_correct_context(self):
         """Изображение передается на главную страницу,
         на страницу профайла, на страницы группы."""
@@ -209,11 +210,15 @@ class StaticViewsTests(TestCase):
 
         Follow.objects.create(author=self.auth, user=self.user)
 
-        for_follower = self.authorized_client.get(reverse("posts:follow_index"))
+        for_follower = self.authorized_client.get(
+            reverse("posts:follow_index")
+        )
         self.assertEqual(len(for_follower.context['page_obj']), 1)
         self.assertIn(self.post, for_follower.context['page_obj'])
 
-        not_for_follower = self.dop_authorized_client.get(reverse('posts:follow_index'))
+        not_for_follower = self.dop_authorized_client.get(
+            reverse('posts:follow_index')
+        )
         self.assertNotIn(self.post, not_for_follower.context['page_obj'])
 
         Follow.objects.all().delete()

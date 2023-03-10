@@ -1,6 +1,5 @@
 from django.test import Client, TestCase, override_settings
 from django.urls import reverse
-from django import forms
 from django.conf import settings
 from django.core.files.uploadedfile import SimpleUploadedFile
 
@@ -33,8 +32,8 @@ class PostCreateFormTests(TestCase):
         )
         cls.comment = Comment.objects.create(
             post=cls.post,
-            author = cls.author,
-            text = 'Тестовый комментарий'
+            author=cls.author,
+            text='Тестовый комментарий'
         )
 
     def setUp(self):
@@ -104,10 +103,15 @@ class PostCreateFormTests(TestCase):
             follow=True,
         )
         self.assertRedirects(
-            response, reverse('posts:post_detail', kwargs={'post_id': self.post.id})
+            response, reverse(
+            'posts:post_detail',
+            kwargs={'post_id': self.post.id}
+            )
         )
         self.assertEqual(Comment.objects.count(), comments_count + 1)
-        self.assertTrue(Comment.objects.filter(text='Тестовый комментарий').exists())
+        self.assertTrue(Comment.objects.filter(
+            text='Тестовый комментарий'
+        ).exists())
 
 
 @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
@@ -143,15 +147,16 @@ class PostFormTests(TestCase):
         self.authorized_client_author.force_login(self.author)
 
     def test_create_post(self):
-        """При отправке валидной формы с картинкой создаётся новая запись в базе данных."""
+        """При отправке валидной формы с картинкой
+        создаётся новая запись в базе данных."""
         post_count = Post.objects.count()
-        small_gif = (            
-             b'\x47\x49\x46\x38\x39\x61\x02\x00'
-             b'\x01\x00\x80\x00\x00\x00\x00\x00'
-             b'\xFF\xFF\xFF\x21\xF9\x04\x00\x00'
-             b'\x00\x00\x00\x2C\x00\x00\x00\x00'
-             b'\x02\x00\x01\x00\x00\x02\x02\x0C'
-             b'\x0A\x00\x3B'
+        small_gif = (
+            b'\x47\x49\x46\x38\x39\x61\x02\x00'
+            b'\x01\x00\x80\x00\x00\x00\x00\x00'
+            b'\xFF\xFF\xFF\x21\xF9\x04\x00\x00'
+            b'\x00\x00\x00\x2C\x00\x00\x00\x00'
+            b'\x02\x00\x01\x00\x00\x02\x02\x0C'
+            b'\x0A\x00\x3B'
         )
         uploaded = SimpleUploadedFile(
             name='small.gif',

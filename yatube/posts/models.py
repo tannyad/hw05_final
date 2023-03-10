@@ -3,8 +3,6 @@ from django.db import models
 
 from yatube.settings import limit_post
 
-from core.models import CreatedModel
-
 
 User = get_user_model()
 
@@ -47,7 +45,7 @@ class Meta:
 
 class Comment(models.Model):
     post = models.ForeignKey(
-        Post, 
+        Post,
         blank=True,
         null=True,
         related_name='comments',
@@ -60,13 +58,13 @@ class Comment(models.Model):
     created = models.DateTimeField(
         verbose_name='Дата публикации',
         auto_now_add=True)
-    
+
     class Meta:
         ordering = ["-created"]
 
     def __str__(self):
         return self.text
-    
+
 
 class Follow (models.Model):
     user = models.ForeignKey(
