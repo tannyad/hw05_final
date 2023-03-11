@@ -1,8 +1,8 @@
 from django.test import TestCase
 from django.contrib.auth import get_user_model
+from django.conf import settings
 
 from ..models import Group, Post
-from yatube.settings import limit_post
 
 User = get_user_model()
 
@@ -31,5 +31,5 @@ class PostModelTest(TestCase):
     def test_post_have_correct_object_names(self):
         """Проверяем, что у модели Post корректно работает __str__."""
         post = PostModelTest.post
-        expected_object_name = post.text[:limit_post]
+        expected_object_name = post.text[:settings.LIMIT_POST]
         self.assertEqual(expected_object_name, str(post))

@@ -143,7 +143,11 @@ LOGIN_REDIRECT_URL = 'posts:post'
 EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
 EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'sent_emails')
 
-limit_post = 15
+LIMIT_POST = 15
+
+ALL_PAGES = 13
+FISRT_LIST = 10
+SECOND_LIST = 3
 
 CSRF_FAILURE_VIEW = 'core.views.csrf_failure'
 

@@ -1,8 +1,8 @@
+from django import forms
 from django.test import TestCase, Client
 from django.contrib.auth import get_user_model
 from django.urls import reverse
-from django import forms
-
+from django.conf import settings
 from django.core.cache import cache
 
 from posts.models import Group, Post, Follow
@@ -205,15 +205,13 @@ class StaticViewsTests(TestCase):
         self.assertNotEqual(new_posts, posts_after_clean)
 
     def test_following(self):
-        no_follow = self.authorized_client.get(reverse('posts:follow_index'))
-        self.assertEqual(len(no_follow.context['page_obj']), 0)
-
-        Follow.objects.create(author=self.auth, user=self.user)
-
-        for_follower = self.authorized_client.get(
-            reverse("posts:follow_index")
-        )
-        self.assertEqual(len(for_follower.context['page_obj']), 1)
+        self.assertEqual(Follow.objects.count(), 0)
+        follow_count = Follow.objects.count()
+        self.authorized_client.post(
+            reverse('posts:profile_follow',
+                    kwargs={'username': self.auth}))
+        for_follower = self.authorized_client.get(reverse('posts:follow_index'))
+        self.assertEqual(Follow.objects.count(), follow_count + 1)
         self.assertIn(self.post, for_follower.context['page_obj'])
 
         not_for_follower = self.dop_authorized_client.get(
@@ -221,9 +219,12 @@ class StaticViewsTests(TestCase):
         )
         self.assertNotIn(self.post, not_for_follower.context['page_obj'])
 
-        Follow.objects.all().delete()
+        self.authorized_client.post(
+            reverse('posts:profile_unfollow',
+                    kwargs={'username': self.auth}))
         unfollow = self.authorized_client.get(reverse('posts:follow_index'))
         self.assertEqual(len(unfollow.context['page_obj']), 0)
+        self.assertEqual(Follow.objects.count(), 0)
 
 
 class PaginatorViewsTest(TestCase):
@@ -238,7 +239,7 @@ class PaginatorViewsTest(TestCase):
         )
         cls.posts = [Post(text='Тестовый текст',
                           author=cls.auth,
-                          group=cls.group) for i in range(13)]
+                          group=cls.group) for i in range(settings.ALL_PAGES)]
         Post.objects.bulk_create(cls.posts)
 
     def setUp(self):
@@ -255,6 +256,6 @@ class PaginatorViewsTest(TestCase):
         for name in names:
             response_first_page = self.client.get(name)
             response_second_page_page = self.client.get(name + '?page=2')
-            self.assertEqual(len(response_first_page.context['page_obj']), 10)
+            self.assertEqual(len(response_first_page.context['page_obj']), settings.FISRT_LIST)
             self.assertEqual(len(
-                response_second_page_page.context['page_obj']), 3)
+                response_second_page_page.context['page_obj']), settings.SECOND_LIST)

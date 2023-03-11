@@ -1,7 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.db import models
-
-from yatube.settings import limit_post
+from django.conf import settings
 
 
 User = get_user_model()
@@ -36,7 +35,7 @@ class Post(models.Model):
     )
 
     def __str__(self):
-        return self.text[:limit_post]
+        return self.text[:settings.LIMIT_POST]
 
 
 class Meta:
@@ -46,10 +45,10 @@ class Meta:
 class Comment(models.Model):
     post = models.ForeignKey(
         Post,
-        blank=True,
+        blank=False,
         null=True,
         related_name='comments',
-        on_delete=models.SET_NULL)
+        on_delete=models.CASCADE)
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
@@ -77,3 +76,11 @@ class Follow (models.Model):
         on_delete=models.CASCADE,
         related_name='following'
     )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['user', 'author'], name='uniq_follow')
+        ]
+    
+    def __str__(self):
+        return self.user

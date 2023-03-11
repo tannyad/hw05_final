@@ -34,6 +34,10 @@ class StaticURLTests(TestCase):
             '/create/': HTTPStatus.FOUND,
             '/unexisting_page/': HTTPStatus.NOT_FOUND,
             f'/posts/{cls.post.pk}/comment/': HTTPStatus.NOT_FOUND,
+            '/follow/': HTTPStatus.NOT_FOUND,
+            f'/profile/{cls.post.author.username}/follow/': HTTPStatus.NOT_FOUND,
+            f'/profile/{cls.post.author.username}/unfollow/': HTTPStatus.NOT_FOUND,
+
         }
 
         cls.templates_code_auth = {
@@ -45,6 +49,9 @@ class StaticURLTests(TestCase):
             '/create/': HTTPStatus.OK,
             '/unexisting_page/': HTTPStatus.NOT_FOUND,
             f'/posts/{cls.post.pk}/comment/': HTTPStatus.FOUND,
+            '/follow/': HTTPStatus.OK,
+            f'/profile/{cls.post.author.username}/follow/': HTTPStatus.FOUND,
+            f'/profile/{cls.post.author.username}/unfollow/': HTTPStatus.FOUND,
         }
 
         cls.templates_url_names = {

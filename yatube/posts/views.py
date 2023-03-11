@@ -1,8 +1,8 @@
-from django.shortcuts import get_object_or_404, render, redirect
-from .models import Group, Post, User, Follow
-from .helpers import pagin
-from .forms import PostForm, CommentForm
 from django.contrib.auth.decorators import login_required
+from django.shortcuts import get_object_or_404, render, redirect
+from .forms import PostForm, CommentForm
+from .helpers import pagin
+from .models import Group, Post, User, Follow
 
 
 POSTS_AMOUNT = 10
@@ -104,7 +104,6 @@ def add_comment(request, post_id):
 
 @login_required
 def follow_index(request):
-    # информация о текущем пользователе доступна в переменной request.user
     subs = request.user.follower.values('author')
     posts = Post.objects.filter(
         author__in=subs).select_related('author', 'group')
@@ -116,19 +115,14 @@ def follow_index(request):
 
 @login_required
 def profile_follow(request, username):
-    # Подписаться на автора
     author = get_object_or_404(User, username=username)
-    follower = Follow.objects.filter(user=request.user, author=author).all()
-    if request.user != author and not follower.exists():
-        Follow.objects.create(user=request.user, author=author)
-    return redirect("posts:follow_index")
+    if request.user != author:
+        Follow.objects.get_or_create(user=request.user, author=author)
+    return redirect('posts:follow_index')
 
 
 @login_required
 def profile_unfollow(request, username):
-    # Дизлайк, отписка
     author = get_object_or_404(User, username=username)
-    follower = Follow.objects.filter(user=request.user, author=author).all()
-    if follower.exists():
-        follower.delete()
+    Follow.objects.get(user=request.user, author=author).delete()
     return redirect("posts:follow_index")
