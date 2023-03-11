@@ -210,7 +210,9 @@ class StaticViewsTests(TestCase):
         self.authorized_client.post(
             reverse('posts:profile_follow',
                     kwargs={'username': self.auth}))
-        for_follower = self.authorized_client.get(reverse('posts:follow_index'))
+        for_follower = self.authorized_client.get(
+            reverse('posts:follow_index')
+        )
         self.assertEqual(Follow.objects.count(), follow_count + 1)
         self.assertIn(self.post, for_follower.context['page_obj'])
 
@@ -256,6 +258,11 @@ class PaginatorViewsTest(TestCase):
         for name in names:
             response_first_page = self.client.get(name)
             response_second_page_page = self.client.get(name + '?page=2')
-            self.assertEqual(len(response_first_page.context['page_obj']), settings.FISRT_LIST)
-            self.assertEqual(len(
-                response_second_page_page.context['page_obj']), settings.SECOND_LIST)
+            self.assertEqual(
+                len(response_first_page.context['page_obj']),
+                settings.FISRT_LIST
+            )
+            self.assertEqual(
+                len(response_second_page_page.context['page_obj']),
+                settings.SECOND_LIST
+            )
