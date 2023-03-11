@@ -35,8 +35,10 @@ class StaticURLTests(TestCase):
             '/unexisting_page/': HTTPStatus.NOT_FOUND,
             f'/posts/{cls.post.pk}/comment/': HTTPStatus.NOT_FOUND,
             '/follow/': HTTPStatus.NOT_FOUND,
-            f'/profile/{cls.post.author.username}/follow/': HTTPStatus.NOT_FOUND,
-            f'/profile/{cls.post.author.username}/unfollow/': HTTPStatus.NOT_FOUND,
+            f'/profile/{cls.post.author.username}/follow/':
+                HTTPStatus.NOT_FOUND,
+            f'/profile/{cls.post.author.username}/unfollow/':
+                HTTPStatus.NOT_FOUND,
 
         }
 
